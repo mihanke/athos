@@ -112,3 +112,7 @@ Notes
 The following issues will be resolved in the very near future:
 * In the current release, flux errors (or S/N values) have no effect on the final statistical parameter errors, which are solely based on the median absolute deviation of the ensemble of measurements for each parameter.
 * So far, no error or exception handlings beyond those implemented in the external modules are available. Consequently, inappropriate input might raise rather cryptic errors/exceptions.
+
+References
+---
+"ATHOS: On-the-fly stellar parameter determination of FGK stars based on flux ratios from optical spectra"; Michael Hanke, Camilla Juul Hansen, Andreas Koch, Eva K. Grebel; accepted for publication in Astronomy & Astrophysics (__ARXIV LINK__)

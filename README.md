@@ -1,7 +1,7 @@
 # ATHOS
 ## On-the-fly stellar parameter determination of FGK stars based on flux ratios from optical spectra
 
-LOGO
+![alt text](https://raw.githubusercontent.com/mihanke/athos/master/ATHOS_logo.png)
 
 *M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel*
 

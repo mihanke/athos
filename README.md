@@ -5,7 +5,7 @@
 
 *M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel*
 
-ATHOS (__A__ __T__ ool for __HO__ mogenizing __S__ tellar parameters) is __A__ (non-exhaustive, users are encouraged to adapt the tool to their needs!) computational implementation of the spectroscopic stellar parameterization method outlined in [Hanke et al. (2018)](https://arxiv.org/abs/1809.01655). Once configured properly, it will measure flux ratios in the input spectra and deduce the stellar parameters *effective temperature*, *iron abundance* (a.k.a [Fe/H]), and *surface gravity* by employing pre-defined analytical relations. The code is written in Python and has been tested to work properly with Python 2.7+ and Python 3.4+. ATHOS can be configured to run in parallel in an arbitrary number of threads, thus enabling the fast and efficient analysis of huge datasets. 
+ATHOS (__A__ __T__ ool for __HO__ mogenizing __S__ tellar parameters) is __A__ (non-exhaustive, users are encouraged to adapt the tool to their needs!) computational implementation of the spectroscopic stellar parameterization method outlined in [Hanke et al. (2018)](https://www.aanda.org/articles/aa/full_html/2018/11/aa33351-18/aa33351-18.html). Once configured properly, it will measure flux ratios in the input spectra and deduce the stellar parameters *effective temperature*, *iron abundance* (a.k.a [Fe/H]), and *surface gravity* by employing pre-defined analytical relations. The code is written in Python and has been tested to work properly with Python 2.7+ and Python 3.4+. ATHOS can be configured to run in parallel in an arbitrary number of threads, thus enabling the fast and efficient analysis of huge datasets. 
 
 Requirements
 ---
@@ -19,7 +19,7 @@ Requirements
 
 Input data
 ---
-The routines are designed to deal with *__one-dimensional, optical__* stellar spectra that are *__shifted to the stellar rest frame__* (see __PAPER__ for details). ATHOS supports several types of file structures, among which are standard 1D fits spectra, fits binary tables, numpy arrays, and plain text (see function `athos_utils.read_spectrum` for details).
+The routines are designed to deal with *__one-dimensional, optical__* stellar spectra that are *__shifted to the stellar rest frame__* (see [__PAPER__](https://www.aanda.org/articles/aa/full_html/2018/11/aa33351-18/aa33351-18.html) for details). ATHOS supports several types of file structures, among which are standard 1D fits spectra, fits binary tables, numpy arrays, and plain text (see function `athos_utils.read_spectrum` for details).
 
 Usage
 ===
@@ -116,4 +116,4 @@ The following issues will be resolved in the very near future:
 References
 ---
 "ATHOS: On-the-fly stellar parameter determination of FGK stars based on flux ratios from optical spectra"
-M. Hanke, C. J. Hansen, A. Koch, E. K. Grebel; accepted for publication in Astronomy & Astrophysics ([arXiv:1809.01655v1](https://arxiv.org/abs/1809.01655))
+M. Hanke, C. J. Hansen, A. Koch, E. K. Grebel, [2018, A&A, 619, A134](https://www.aanda.org/articles/aa/full_html/2018/11/aa33351-18/aa33351-18.html) ([arXiv:1809.01655v1](https://arxiv.org/abs/1809.01655))

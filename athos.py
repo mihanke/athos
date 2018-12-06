@@ -12,8 +12,7 @@ References
 ----------
 .. [1] Astronomy & Astrophysics, "ATHOS: On-the-fly stellar parameter 
 determination of FGK stars based on flux ratios from optical spectra", 
-M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel (ADD CORRECT REFERENCE 
-BY THE TIME OF PUBLICATION)
+M. Hanke, C. J. Hansen, A. Koch and E. K. Grebel, 2018, A&A, 619, A134
 
 """
 import numpy as np

@@ -19,19 +19,21 @@ Constants
 - 'logg_cov' -- Covariances for 'logg_coeff'.
 - 'R_correction_coefficients' -- Coefficients for the resolution corrections 
                                  (Eq. 14 in [1]).
+- 'degrading_regions' -- Bounds for the regions of assumed constant FWHM for 
+                         degradation to the training resolution.
 - 'wl_tell' -- Expected positions of tellurics in the topocentric rest frame.
 
 References
 ----------
 .. [1] Astronomy & Astrophysics, "ATHOS: On-the-fly stellar parameter 
 determination of FGK stars based on flux ratios from optical spectra", 
-M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel (ADD CORRECT REFERENCE 
-BY THE TIME OF PUBLICATION)
+M. Hanke, C. J. Hansen, A. Koch and E. K. Grebel, 2018, A&A, 619, A134
 
 """
 import numpy as np
 
 from astropy.io import fits
+from astropy.convolution import convolve_fft, Gaussian1DKernel
 from pandas import read_csv
 
 v_Teff_sys = 97 ** 2
@@ -50,6 +52,7 @@ met_cov  = np.load('./coefficients/met_covs.npy')
 logg_cov = np.load('./coefficients/logg_covs.npy')
 
 R_correction_coefficients = np.load('./coefficients/R_correction_coefficients.npy')
+degrading_regions = np.load('./coefficients/degrading_ranges.npy')
 
 # Load telluric line positions
 wl_tell = np.load('./coefficients/expected_tellurics.npy')
@@ -199,8 +202,7 @@ def analyze_spectrum(spec, dtype, wunit, p_weights = None, tell_rejection = Fals
     ----------
     .. [1] Astronomy & Astrophysics, "ATHOS: On-the-fly stellar parameter 
     determination of FGK stars based on flux ratios from optical spectra", 
-    M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel (ADD CORRECT REFERENCE 
-    BY THE TIME OF PUBLICATION)
+    M. Hanke, C. J. Hansen, A. Koch and E. K. Grebel, 2018, A&A, 619, A134
         
     """
     if isinstance(spec, str):
@@ -208,6 +210,10 @@ def analyze_spectrum(spec, dtype, wunit, p_weights = None, tell_rejection = Fals
     else:
         x = spec[:,0]
         y = spec[:,1]
+        
+    if not hasattr(R, '__len__'):
+        if R > 45000:
+            x, y = degrade_spectrum(x, y, R, regions=degrading_regions, R_target = 45000)
         
     if tell_rejection:
         y = reject_telluric_regions(x, y, wl_tell/np.mean(R), v_topo)
@@ -217,7 +223,7 @@ def analyze_spectrum(spec, dtype, wunit, p_weights = None, tell_rejection = Fals
     frs, v_frs = compute_fr(x, y, stacked_ranges[:,0], stacked_ranges[:,1], stacked_ranges[:,2], y_err = y_err)
     if hasattr(R, '__len__'):
         frs -= higher_order_correction(R_correction_coefficients.transpose(), R, frs)
-    elif R != 45000:
+    elif R < 45000:
         frs -= higher_order_correction(R_correction_coefficients.transpose(), R, frs)
     else:
         pass
@@ -358,6 +364,56 @@ def read_spectrum(name, dtype, wunit, wave_keywd = None, flux_keywd = None):
         
     return x, y
 
+def degrade_spectrum(x, y, R_orig, regions, R_target):
+    """ Degrade a spectrum to lower resolution.
+    
+    Degrade an input spectrum of higher resolution than the training 
+    resolution to the resolution 'R_target' by convolution with a 
+    Gaussian kernel of appropriate width. Only the parts relevant 
+    for computing ATHOS' flux ratios are considered and merged 
+    in a new spectrum 'y_new'. Therefore, several ranges are defined
+    where the assumption of a constant profile FWHM should hold
+    (both in pixel and wavelength space).
+    
+    Parameters
+    -----------
+    x : array_like, shape (N, )
+        1-D array containing the wavelength information.
+    y : array_like, shape (N, )
+        1-D array containing the flux information.
+    R_orig : float
+        Original resolution of the spectrograph.
+    regions : array_like, shape (M, 2)
+        Lower and upper bounds for the regions that are considered to
+        have a constant FWHM.
+    R_target : float
+        The desired resolution to which the input spectrum is 
+        degraded.
+        
+    Returns
+    -------
+    x_new : array_like, shape (L, )
+        Merged wavelength array consisting only of the FR-relevant 
+        parts of the spectrum.
+    y_new : array_like, shape (L, )
+        Merged flux array consisting only of the FR-relevant parts 
+        of the spectrum at resolution 'R_target'.
+
+    """
+    R_kernel = 1 / np.sqrt(1 / R_target**2 - 1 / R_orig**2)
+    x_new, y_new = [], []
+    for r in regions:
+        x_mask = (x > r[0]) & (x < r[1])
+        mean_dx = np.nanmedian(x[x_mask][1:] - x[x_mask][:-1])
+        kernel = Gaussian1DKernel(np.nanmean(x[x_mask]) / R_kernel / 2.3548 / mean_dx)
+        y_deg = convolve_fft(y[x_mask], kernel)
+        x_new += x[x_mask].tolist()
+        y_new += y_deg.tolist()
+        
+    x_new, y_new = np.array(x_new), np.array(y_new)
+    
+    return x_new, y_new
+
 def reject_telluric_regions(x, y, rej_width, v_topo):
     """ Set all fluxes that are potentially affected by tellurics to NaN.
     
@@ -382,7 +438,6 @@ def reject_telluric_regions(x, y, rej_width, v_topo):
         Copy of 'y' with regions of telluric contamination set to NaN.
 
     """
-    
     half_rej_width  = rej_width / 2
     wl_tell_shifted = wl_tell * (1 - v_topo / 299792.458)
     lower_bounds    = np.searchsorted(x, wl_tell_shifted - half_rej_width, side = 'left')

@@ -5,6 +5,8 @@
 
 *M. Hanke, C. J. Hansen, A. Koch, and E. K. Grebel*
 
+__NEW function added: ATHOS can now analyze spectra with resolutions >> 45000 by convolution with an appropriate Gaussian kernel.__
+
 ATHOS (__A__ __T__ ool for __HO__ mogenizing __S__ tellar parameters) is __A__ (non-exhaustive, users are encouraged to adapt the tool to their needs!) computational implementation of the spectroscopic stellar parameterization method outlined in [Hanke et al. (2018)](https://www.aanda.org/articles/aa/full_html/2018/11/aa33351-18/aa33351-18.html). Once configured properly, it will measure flux ratios in the input spectra and deduce the stellar parameters *effective temperature*, *iron abundance* (a.k.a [Fe/H]), and *surface gravity* by employing pre-defined analytical relations. The code is written in Python and has been tested to work properly with Python 2.7+ and Python 3.4+. ATHOS can be configured to run in parallel in an arbitrary number of threads, thus enabling the fast and efficient analysis of huge datasets. 
 
 Requirements
@@ -58,7 +60,7 @@ The following seven (nine) parameters must be set:
 * `output_file`: A string telling ATHOS where to save the output results.
 * `dtype`: A string denoting the dispersion type of the input spectra. Valid options are 'lin', 'log10', or 'ln'.
 * `wunit`: The wavelength unit can either be Angstroms ('aa') or nanometers ('nm').
-* `R`: The resolution of the spectrograph.
+* `R`: The resolution of the spectrograph. For stars with substantial rotation (*v*sin*i* > 5 km/s), an effective resolution R = sqrt(Rinst^2 + (*v*sin*i*/c)^2) should be provided.
 * `tell_rejection`: A flag specifying whether telluric rejection should be performed. If `tell_rejection` is set to `True`, the relative velocity of the topocenter has to be provided in the file `input_specs` (see next section).
 * `n_threads`: The number of threads used for parallel computation. A value of `-1` indicates that all available cores/threads should be used.
 * `wave_keywd` (optional): A string telling ATHOS where to look for the wavelength information in a fits binary table. It should be set to `None`, commented out, or completely deleted if the input spectra are not in fits binary table format. Further, `wave_keywd` does not need to be explicitly set if it is `WAVE`.

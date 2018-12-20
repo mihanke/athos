@@ -60,7 +60,7 @@ The following seven (nine) parameters must be set:
 * `output_file`: A string telling ATHOS where to save the output results.
 * `dtype`: A string denoting the dispersion type of the input spectra. Valid options are 'lin', 'log10', or 'ln'.
 * `wunit`: The wavelength unit can either be Angstroms ('aa') or nanometers ('nm').
-* `R`: The resolution of the spectrograph. For stars with substantial rotation (*v*sin*i* > 5 km/s), an effective resolution R = sqrt(Rinst^2 + (*v*sin*i*/c)^2) should be provided.
+* `R`: The resolution of the spectrograph. For stars with substantial rotation (*v*sin*i* > 5 km/s), an effective resolution R = 1/sqrt(1/Rinst^2 + (*v*sin*i*/c)^2) should be provided.
 * `tell_rejection`: A flag specifying whether telluric rejection should be performed. If `tell_rejection` is set to `True`, the relative velocity of the topocenter has to be provided in the file `input_specs` (see next section).
 * `n_threads`: The number of threads used for parallel computation. A value of `-1` indicates that all available cores/threads should be used.
 * `wave_keywd` (optional): A string telling ATHOS where to look for the wavelength information in a fits binary table. It should be set to `None`, commented out, or completely deleted if the input spectra are not in fits binary table format. Further, `wave_keywd` does not need to be explicitly set if it is `WAVE`.

@@ -268,7 +268,7 @@ def analyze_spectrum(spec, dtype, wunit, p_weights = None, tell_rejection = Fals
         
     mean_v_loggs_sys = np.nanmedian(v_loggs_sys)
     
-    return round(mean_Teff), round(np.sqrt(v_mean_Teff)), round(np.sqrt(v_Teff_sys)), mean_met, np.sqrt(v_mean_met), np.sqrt(mean_v_mets_sys), mean_logg, np.sqrt(v_mean_logg), np.sqrt(mean_v_loggs_sys)
+    return round(mean_Teff), round(np.sqrt(v_mean_Teff)), round(np.sqrt(v_Teff_sys)), mean_met, np.sqrt(v_mean_met), np.sqrt(mean_v_mets_sys), mean_logg, np.sqrt(v_mean_logg), np.sqrt(mean_v_loggs_sys), Teffs, mets, loggs
 
 def read_spectrum(name, dtype, wunit, wave_keywd = None, flux_keywd = None):
     """ Read spectrum from disk.
@@ -361,6 +361,12 @@ def read_spectrum(name, dtype, wunit, wave_keywd = None, flux_keywd = None):
         pass
     elif wunit == 'nm':
         x *= 10
+    
+    # make sure that ATHOS won't interpolate over wavelength discontinuities of more than 2 Angstroms
+    wl_jumps = np.where(x[1:] - x[:-1] > 2)[0]
+    for jump_i in wl_jumps:
+        y[jump_i] = np.nan
+        y[jump_i+1] = np.nan
         
     return x, y
 
@@ -404,11 +410,16 @@ def degrade_spectrum(x, y, R_orig, regions, R_target):
     x_new, y_new = [], []
     for r in regions:
         x_mask = (x > r[0]) & (x < r[1])
-        mean_dx = np.nanmedian(x[x_mask][1:] - x[x_mask][:-1])
-        kernel = Gaussian1DKernel(np.nanmean(x[x_mask]) / R_kernel / 2.3548 / mean_dx)
-        y_deg = convolve_fft(y[x_mask], kernel)
-        x_new += x[x_mask].tolist()
-        y_new += y_deg.tolist()
+        if np.any(x_mask):
+            mean_dx = np.nanmedian(x[x_mask][1:] - x[x_mask][:-1])
+            kernel = Gaussian1DKernel(np.nanmean(x[x_mask]) / R_kernel / 2.3548 / mean_dx)
+            y_deg = convolve_fft(y[x_mask], kernel)
+            x_new += x[x_mask].tolist()
+            y_new += y_deg.tolist()
+        else:
+            x_temp = np.arange(r[0], r[1], 0.1)
+            x_new += x_temp.tolist()
+            y_new += (np.zeros(len(x_temp))*np.nan).tolist()
         
     x_new, y_new = np.array(x_new), np.array(y_new)
     

@@ -79,7 +79,17 @@ else:
 # Write output file        
 lines_out = ['#spectrum Teff Teff_err_stat Teff_err_sys [Fe/H] [Fe/H]_err_stat [Fe/H]_err_sys logg logg_err_stat logg_err_sys\n']
 for i, line in enumerate(results):
-    lines_out.append('{:{file_len}s}  {:5.0f}  {:4.0f}  {:4.0f}  {:5.2f}  {:4.2f}  {:4.2f}  {:4.2f}  {:4.2f}  {:4.2f}\n'.format(file_list[i], *line, file_len=max_file_len))
+    lines_out.append('{:{file_len}s}  {:5.0f}  {:4.0f}  {:4.0f}  {:5.2f}  {:4.2f}  {:4.2f}  {:4.2f}  {:4.2f}  {:4.2f}\n'.format(file_list[i], *line[:9], file_len=max_file_len))
     
 with open(output_file, 'w') as f_out:
     f_out.writelines(lines_out)
+
+if 'verbose' in locals():
+    if verbose:
+        fmt_string = '{:{file_len}s}  ' + '{:5.0f}  ' * len(results[0][9]) + '{:5.2f}  ' * len(results[0][10]) + '{:4.2f}  ' * len(results[0][11]) + '\n' 
+        lines_out = ['#spectrum, individual Teff, individual [Fe/H], individual logg\n']
+        for i, line in enumerate(results):
+            lines_out.append(fmt_string.format(file_list[i], *line[9], *line[10], *line[11], file_len=max_file_len))
+            
+        with open(output_file + '_verbose', 'w') as f_out:
+            f_out.writelines(lines_out)

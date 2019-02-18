@@ -7,3 +7,4 @@ tell_rejection = True # Either True or False. If True, the range lambda - lamda_
 n_threads = -1        # number of threads for parallelization; all available cores/threads if set to -1
 # wave_keywd = None   # Wavelength keyword for fits binary table spectra.
 # flux_keywd = None   # Flux keyword for fits binary table spectra.
+# verbose = True      # Provide all measurements from individual FRs

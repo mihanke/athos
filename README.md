@@ -54,6 +54,7 @@ tell_rejection = True # Either True or False. If True, the range lambda - lamda_
 n_threads = -1        # number of threads for parallelization; all available cores/threads if set to -1
 # wave_keywd = None   # Wavelength keyword for fits binary table spectra.
 # flux_keywd = None   # Flux keyword for fits binary table spectra.
+# verbose = True      # Provide all measurements from individual FRs
 ```
 The following seven (nine) parameters must be set:
 * `input_specs`: A string containing the (absolute or relative) path to the input text file that stores the information about the spectra (see next section).
@@ -65,6 +66,7 @@ The following seven (nine) parameters must be set:
 * `n_threads`: The number of threads used for parallel computation. A value of `-1` indicates that all available cores/threads should be used.
 * `wave_keywd` (optional): A string telling ATHOS where to look for the wavelength information in a fits binary table. It should be set to `None`, commented out, or completely deleted if the input spectra are not in fits binary table format. Further, `wave_keywd` does not need to be explicitly set if it is `WAVE`.
 * `flux_keywd` (optional): A string telling ATHOS where to look for the flux information in a fits binary table. It should be set to `None`, commented out, or completely deleted if the input spectra are not in fits binary table format. Further, `flux_keywd` does not need to be explicitly set if it is `FLUX` or `FLUX_REDUCED`.
+* `verbose` (optional): A boolean controlling whether ATHOS will provide an additional file (`output_file` + '\_verbose') containing the measurements from individual FRs in the order of appearance in tables A.1, A.2, and A.3 of the [__paper__](https://www.aanda.org/articles/aa/full_html/2018/11/aa33351-18/aa33351-18.html).
 
 The input file `input_specs`
 ---

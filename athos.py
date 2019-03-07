@@ -89,7 +89,7 @@ if 'verbose' in locals():
         fmt_string = '{:{file_len}s}  ' + '{:5.0f}  ' * len(results[0][9]) + '{:5.2f}  ' * len(results[0][10]) + '{:4.2f}  ' * len(results[0][11]) + '\n' 
         lines_out = ['#spectrum, individual Teff, individual [Fe/H], individual logg\n']
         for i, line in enumerate(results):
-            lines_out.append(fmt_string.format(file_list[i], *line[9], *line[10], *line[11], file_len=max_file_len))
+            lines_out.append(fmt_string.format(file_list[i], *(line[9].tolist() + line[10].tolist() + line[11].tolist()), file_len=max_file_len))
             
         with open(output_file + '_verbose', 'w') as f_out:
             f_out.writelines(lines_out)
